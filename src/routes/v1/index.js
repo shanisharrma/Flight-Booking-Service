@@ -5,7 +5,7 @@ const bookingRoutes = require("./booking-routes");
 
 const router = express.Router();
 
-router.use("/booking", bookingRoutes);
+router.use("/bookings", bookingRoutes);
 
 router.get("/info", InfoController.info);
 

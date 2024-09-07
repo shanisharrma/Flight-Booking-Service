@@ -1,6 +1,6 @@
 const axios = require("axios");
 const db = require("../models");
-const { ServerConfig } = require("../config");
+const { ServerConfig, Queue } = require("../config");
 const { StatusCodes } = require("http-status-codes");
 const AppError = require("../utils/errors/app-error");
 const { BookingRepository } = require("../repositories");
@@ -37,6 +37,7 @@ async function createBooking(data) {
     );
 
     await transaction.commit();
+
     return booking;
   } catch (error) {
     await transaction.rollback();
@@ -83,8 +84,14 @@ async function makePayment(data) {
       { status: BOOKED },
       transaction
     );
+    Queue.sendData({
+      recipientEmail: "codingsutra509@gmail.com",
+      subject: "Flight Booked",
+      text: `Booking successfully done for the flight ${data.bookingId}`,
+    });
     await transaction.commit();
   } catch (error) {
+    console.log(error);
     await transaction.rollback();
     throw error;
   }
